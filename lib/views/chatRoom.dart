@@ -16,6 +16,8 @@ class ChatRoom extends StatefulWidget {
 }
 
 class _ChatRoomState extends State<ChatRoom> {
+  FirebaseUser _user;
+  String _groupName;
   AuthMethods authMethods = new AuthMethods();
   DatabaseMethods databaseMethods = new DatabaseMethods();
   Stream chatRoomStream;
@@ -29,12 +31,22 @@ class _ChatRoomState extends State<ChatRoom> {
                 shrinkWrap: true,
                 itemCount: snapshot.data.documents.length,
                 itemBuilder: (context, index) {
-                  return ChatRoomsTile(
+                  if (snapshot.data.documents[index].data["type"] ==
+                      "group") {
+                    return ChatRoomsTile(
+                      snapshot.data.documents[index].data["groupName"],
+                      snapshot.data.documents[index].data["chatroomid"],
+                      snapshot.data.documents[index].data["type"]);
+                  } else {
+                    return ChatRoomsTile(
                       snapshot.data.documents[index].data["chatroomid"]
                           .toString()
                           .replaceAll("_", "")
                           .replaceAll(Constants.myName, ""),
-                      snapshot.data.documents[index].data["chatroomid"]);
+                      snapshot.data.documents[index].data["chatroomid"],
+                      snapshot.data.documents[index].data["type"]
+                      );
+                  }
                 },
               )
             : Container();
@@ -49,8 +61,9 @@ class _ChatRoomState extends State<ChatRoom> {
   }
 
   getUserInfo() async {
+    _user = await FirebaseAuth.instance.currentUser();
     Constants.myName = await HelperFunctions.getUserNameSharedPreference();
-    databaseMethods.getChatRooms(Constants.myName).then((value) {
+    databaseMethods.getChatRooms(_user.uid, Constants.myName).then((value) {
       setState(() {
         chatRoomStream = value;
       });
@@ -62,9 +75,23 @@ class _ChatRoomState extends State<ChatRoom> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset(
-          "assets/images/logo.png",
-          height: 50,
+        brightness: Brightness.dark,
+        elevation: 8,
+        leading: IconButton(
+          icon: Icon(Icons.search),
+          color: Colors.white,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SearchScreen()),
+            );
+          },
+        ),
+        title: Text(
+          'Inbox',
+          style: TextStyle(
+            color: Colors.white,
+          ),
         ),
         actions: <Widget>[
           GestureDetector(
@@ -83,12 +110,16 @@ class _ChatRoomState extends State<ChatRoom> {
       ),
       body: chatRoomList(),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.search),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SearchScreen()),
-          );
+        child: Icon(Icons.add),
+        onPressed: () async {
+          await HelperFunctions.getUserNameSharedPreference().then((val) {
+            DatabaseMethods(uid: _user.uid)
+                .togglingGroupJoin("SGwvp3NpkBRGPDAHGxrg", "Testing", val);
+          });
+          // await DatabaseMethods(uid: _user.uid).togglingGroupJoin("sin0gvnSrtZX3q0OxSEV", "Testing", userName);
+          // await HelperFunctions.getUserNameSharedPreference().then((val) {
+          //   DatabaseMethods(uid: _user.uid).createGroup(val, "Testing");
+          // });
         },
       ),
     );
@@ -98,7 +129,8 @@ class _ChatRoomState extends State<ChatRoom> {
 class ChatRoomsTile extends StatelessWidget {
   final String userName;
   final String chatRoomId;
-  ChatRoomsTile(this.userName, this.chatRoomId);
+  final String type;
+  ChatRoomsTile(this.userName, this.chatRoomId,this.type);
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -108,6 +140,7 @@ class ChatRoomsTile extends StatelessWidget {
             MaterialPageRoute(
               builder: (context) => ConverstationScreen(
                 chatRoomId,
+                type
               ),
             ));
       },

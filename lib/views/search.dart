@@ -28,7 +28,7 @@ class _SearchScreenState extends State<SearchScreen> {
             shrinkWrap: true,
             itemBuilder: (context, index) {
               return SearchTile(
-                  userName: searchSnapshot.documents[index].data["name"],
+                  userName: searchSnapshot.documents[index].data["nama"],
                   userEmail: searchSnapshot.documents[index].data["email"]);
             })
         : Container();
@@ -52,13 +52,14 @@ class _SearchScreenState extends State<SearchScreen> {
       List<String> users = [userName, Constants.myName];
       Map<String, dynamic> chatRoomMap = {
         "users": users,
-        "chatroomid": chatRoomId
+        "chatroomid": chatRoomId,
+        "type":"personal"
       };
       DatabaseMethods().createChatRoom(chatRoomId, chatRoomMap);
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ConverstationScreen(chatRoomId),
+            builder: (context) => ConverstationScreen(chatRoomId,"personal"),
           ));
     } else {
       print("Username Not Found");
