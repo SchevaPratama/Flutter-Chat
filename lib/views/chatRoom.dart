@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutchat/helper/authenticate.dart';
 import 'package:flutchat/helper/constants.dart';
 import 'package:flutchat/helper/helperfunction.dart';
@@ -16,7 +17,7 @@ class ChatRoom extends StatefulWidget {
 }
 
 class _ChatRoomState extends State<ChatRoom> {
-  FirebaseUser _user;
+  User _user;
   String _groupName;
   AuthMethods authMethods = new AuthMethods();
   DatabaseMethods databaseMethods = new DatabaseMethods();
@@ -31,20 +32,21 @@ class _ChatRoomState extends State<ChatRoom> {
                 shrinkWrap: true,
                 itemCount: snapshot.data.documents.length,
                 itemBuilder: (context, index) {
-                  if (snapshot.data.documents[index].data["type"] ==
+                  if (snapshot.data.documents[index].data()["type"] ==
                       "group") {
                     return ChatRoomsTile(
-                      snapshot.data.documents[index].data["groupName"],
-                      snapshot.data.documents[index].data["chatroomid"],
-                      snapshot.data.documents[index].data["type"]);
+                      snapshot.data.documents[index].data()["groupName"],
+                      snapshot.data.documents[index].data()["chatroomid"],
+                      snapshot.data.documents[index].data()["type"]);
                   } else {
                     return ChatRoomsTile(
-                      snapshot.data.documents[index].data["chatroomid"]
+                      snapshot.data.documents[index].data()["chatroomid"]
                           .toString()
                           .replaceAll("_", "")
                           .replaceAll(Constants.myName, ""),
-                      snapshot.data.documents[index].data["chatroomid"],
-                      snapshot.data.documents[index].data["type"]
+                      snapshot.data.documents[index].data()["chatroomid"],
+                      snapshot.data.documents[index].data()["type"],
+                      chatroom: snapshot.data.documents[index],
                       );
                   }
                 },
@@ -61,9 +63,10 @@ class _ChatRoomState extends State<ChatRoom> {
   }
 
   getUserInfo() async {
-    _user = await FirebaseAuth.instance.currentUser();
+    _user = await AuthMethods.getCurentUser();
+    print(_user.uid + "asd");
     Constants.myName = await HelperFunctions.getUserNameSharedPreference();
-    databaseMethods.getChatRooms(_user.uid, Constants.myName).then((value) {
+    databaseMethods.getChatRooms(_user.uid).then((value) {
       setState(() {
         chatRoomStream = value;
       });
@@ -130,7 +133,8 @@ class ChatRoomsTile extends StatelessWidget {
   final String userName;
   final String chatRoomId;
   final String type;
-  ChatRoomsTile(this.userName, this.chatRoomId,this.type);
+  final DocumentSnapshot chatroom;
+  ChatRoomsTile(this.userName, this.chatRoomId,this.type,{this.chatroom});
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -140,7 +144,8 @@ class ChatRoomsTile extends StatelessWidget {
             MaterialPageRoute(
               builder: (context) => ConverstationScreen(
                 chatRoomId,
-                type
+                type,
+                chatroom: chatroom,
               ),
             ));
       },

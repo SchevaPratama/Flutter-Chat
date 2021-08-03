@@ -27,7 +27,7 @@ class _SignInState extends State<SignIn> {
   bool isLoading = false;
   QuerySnapshot snapshotUserInfo;
 
-  signIn() {
+  signIn() async {
     if (formKey.currentState.validate()) {
       HelperFunctions.saveUserEmailSharedPreference(
           emailTexteditingController.text);
@@ -41,12 +41,12 @@ class _SignInState extends State<SignIn> {
           .then((val) {
         snapshotUserInfo = val;
         HelperFunctions.saveUserNameSharedPreference(
-            snapshotUserInfo.documents[0].data['name']);
+            snapshotUserInfo.docs[0].data()['name']);
         HelperFunctions.saveUserEmailSharedPreference(
-            snapshotUserInfo.documents[0].data['email']);
+            snapshotUserInfo.docs[0].data()['email']);
       });
 
-      authMethods.SignInWithEmailAndPassword(emailTexteditingController.text,
+      await AuthMethods.signInEmail(emailTexteditingController.text,
               passwordTexteditingController.text)
           .then((val) {
         if (val != null) {

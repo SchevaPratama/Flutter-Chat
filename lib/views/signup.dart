@@ -30,29 +30,31 @@ class _SignUpState extends State<SignUp> {
   TextEditingController passwordTexteditingController =
       new TextEditingController();
 
-  signMeUp() {
+  signMeUp() async {
     if (formKey.currentState.validate()) {
       setState(() {
         isLoading = true;
       });
 
-      authMethods.SignUpWithEmailAndPassword(emailTexteditingController.text,
-              passwordTexteditingController.text)
-          .then((val) {
+      await AuthMethods.signUp(
+        emailTexteditingController.text,
+        passwordTexteditingController.text,
+        usernameTexteditingController.text,
+      ).then((val) {
         // print("${val.uid}");
 
-        Map<String, String> userInfoMap = {
-          "name": usernameTexteditingController.text,
-          "email": emailTexteditingController.text
-        };
+        // Map<String, String> userInfoMap = {
+        //   "name": usernameTexteditingController.text,
+        //   "email": emailTexteditingController.text
+        // };
 
-        HelperFunctions.saveUserNameSharedPreference(
-            usernameTexteditingController.text);
-        HelperFunctions.saveUserEmailSharedPreference(
-            emailTexteditingController.text);
+        // HelperFunctions.saveUserNameSharedPreference(
+        //     usernameTexteditingController.text);
+        // HelperFunctions.saveUserEmailSharedPreference(
+        //     emailTexteditingController.text);
 
-        databaseMethods.uploadUserInfo(userInfoMap);
-        HelperFunctions.saveUserLoggedInSharedPreference(true);
+        // databaseMethods.uploadUserInfo(userInfoMap);
+        // HelperFunctions.saveUserLoggedInSharedPreference(true);
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => ChatRoom()));
       });

@@ -28,8 +28,9 @@ class _SearchScreenState extends State<SearchScreen> {
             shrinkWrap: true,
             itemBuilder: (context, index) {
               return SearchTile(
-                  userName: searchSnapshot.documents[index].data["nama"],
-                  userEmail: searchSnapshot.documents[index].data["email"]);
+                  userName: searchSnapshot.documents[index].data()["nama"],
+                  userEmail: searchSnapshot.documents[index].data()["email"],
+                  chatroom: searchSnapshot.documents[index]);
             })
         : Container();
   }
@@ -45,28 +46,34 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   // Create chat room,send user to converstation screen,push replacement
-  createChatRoomAndStartConverstation({String userName}) {
+  createChatRoomAndStartConverstation({String userName, DocumentSnapshot chat}) {
     if (userName != Constants.myName) {
       String chatRoomId = getChatRoomId(userName, Constants.myName);
 
       List<String> users = [userName, Constants.myName];
       Map<String, dynamic> chatRoomMap = {
+        "mapDocument": {
+          "mapDocument1": {
+            "key1": "value1",
+            "key2": "value2",
+          }
+        },
         "users": users,
         "chatroomid": chatRoomId,
-        "type":"personal"
+        "type": "personal"
       };
       DatabaseMethods().createChatRoom(chatRoomId, chatRoomMap);
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ConverstationScreen(chatRoomId,"personal"),
+            builder: (context) => ConverstationScreen(chatRoomId, "personal",chatroom: chat,),
           ));
     } else {
       print("Username Not Found");
     }
   }
 
-  Widget SearchTile({String userName, String userEmail}) {
+  Widget SearchTile({String userName, String userEmail,DocumentSnapshot chatroom}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
@@ -88,7 +95,7 @@ class _SearchScreenState extends State<SearchScreen> {
           GestureDetector(
             onTap: () {
               createChatRoomAndStartConverstation(
-                userName: userName,
+                userName: userName,chat: chatroom
               );
             },
             child: Container(
