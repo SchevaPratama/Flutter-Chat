@@ -4,8 +4,12 @@ import 'package:flutchat/views/chatRoom.dart';
 import 'package:flutchat/views/signin.dart';
 import 'package:flutchat/views/signup.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -16,7 +20,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool userIsLoggedIn;
+  bool? userIsLoggedIn;
 
   @override
   void initState() {
@@ -43,7 +47,7 @@ class _MyAppState extends State<MyApp> {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: userIsLoggedIn != null
-          ? userIsLoggedIn ? ChatRoom() : Authenticate()
+          ? userIsLoggedIn! ? ChatRoom() : Authenticate()
           : Authenticate(),
     );
   }

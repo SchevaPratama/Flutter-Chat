@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutchat/helper/constants.dart';
 import 'package:flutchat/helper/helperfunction.dart';
 import 'package:flutchat/services/database.dart';
@@ -5,7 +6,7 @@ import 'package:flutchat/widgets/widget.dart';
 import 'package:flutter/material.dart';
 
 class ConverstationScreen extends StatefulWidget {
-  final String chatRoomId;
+  final String? chatRoomId;
   ConverstationScreen(this.chatRoomId);
   @override
   _ConverstationScreenState createState() => _ConverstationScreenState();
@@ -15,7 +16,7 @@ class _ConverstationScreenState extends State<ConverstationScreen> {
   DatabaseMethods databaseMethods = new DatabaseMethods();
   TextEditingController messageController = new TextEditingController();
 
-  Stream chatMessageStream;
+  Stream? chatMessageStream;
 
   Widget ChatMessageList() {
     return StreamBuilder(
@@ -23,11 +24,11 @@ class _ConverstationScreenState extends State<ConverstationScreen> {
         builder: (context, snapshot) {
           return snapshot.hasData
               ? ListView.builder(
-                  itemCount: snapshot.data.documents.length,
+                  itemCount: (snapshot.data! as QuerySnapshot).docs.length,
                   itemBuilder: (context, index) {
                     return MessageTile(
-                        snapshot.data.documents[index].data["message"],
-                        snapshot.data.documents[index].data["sendBy"] ==
+                        ((snapshot.data! as QuerySnapshot).docs[index].data() as Map<String, dynamic>)["message"],
+                        ((snapshot.data! as QuerySnapshot).docs[index].data() as Map<String, dynamic>)["sendBy"] ==
                             Constants.myName);
                   },
                 )
@@ -60,7 +61,7 @@ class _ConverstationScreenState extends State<ConverstationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarMain(context),
+      appBar: appBarMain(context) as PreferredSizeWidget?,
       body: Container(
         child: Stack(
           children: <Widget>[
@@ -116,7 +117,7 @@ class _ConverstationScreenState extends State<ConverstationScreen> {
 }
 
 class MessageTile extends StatelessWidget {
-  final String message;
+  final String? message;
   final bool isSendByMe;
   MessageTile(this.message, this.isSendByMe);
 
@@ -146,7 +147,7 @@ class MessageTile extends StatelessWidget {
                     topRight: Radius.circular(23),
                     bottomRight: Radius.circular(23))),
         child: Text(
-          message,
+          message!,
           style: TextStyle(
             color: Colors.white,
             fontSize: 17,

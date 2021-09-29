@@ -1,20 +1,20 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as FirebaseAuth;
 import 'package:flutchat/model/user.dart';
 
 class AuthMethods {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth.FirebaseAuth _auth = FirebaseAuth.FirebaseAuth.instance;
 
-  User _userFromFirebaseUser(FirebaseUser user) {
+  User? _userFromFirebaseUser(FirebaseAuth.User? user) {
     return user != null ? User(userID: user.uid) : null;
   }
 
   Future SignInWithEmailAndPassword(String email, String password) async {
     try {
-      AuthResult result = await _auth.signInWithEmailAndPassword(
+      FirebaseAuth.UserCredential result = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      FirebaseUser firebaseUser = result.user;
+      FirebaseAuth.User? firebaseUser = result.user;
       return _userFromFirebaseUser(firebaseUser);
     } catch (e) {
       print(e.toString());
@@ -23,11 +23,11 @@ class AuthMethods {
 
   Future SignUpWithEmailAndPassword(String email, String password) async {
     try {
-      AuthResult result = await _auth.createUserWithEmailAndPassword(
+      FirebaseAuth.UserCredential result = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      FirebaseUser firebaseUser = result.user;
+      FirebaseAuth.User? firebaseUser = result.user;
       return _userFromFirebaseUser(firebaseUser);
     } catch (e) {
       print(e.toString());

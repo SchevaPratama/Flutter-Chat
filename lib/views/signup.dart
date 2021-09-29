@@ -31,7 +31,7 @@ class _SignUpState extends State<SignUp> {
       new TextEditingController();
 
   signMeUp() {
-    if (formKey.currentState.validate()) {
+    if (formKey.currentState!.validate()) {
       setState(() {
         isLoading = true;
       });
@@ -62,7 +62,7 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarMain(context),
+      appBar: appBarMain(context) as PreferredSizeWidget?,
       body: isLoading
           ? Container(
               child: Center(child: CircularProgressIndicator()),
@@ -82,7 +82,7 @@ class _SignUpState extends State<SignUp> {
                           children: <Widget>[
                             TextFormField(
                               validator: (val) {
-                                return val.isEmpty || val.length < 2
+                                return val!.isEmpty || val.length < 2
                                     ? "Please Enter Username Correctly"
                                     : null;
                               },
@@ -94,7 +94,7 @@ class _SignUpState extends State<SignUp> {
                               validator: (val) {
                                 return RegExp(
                                             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                        .hasMatch(val)
+                                        .hasMatch(val!)
                                     ? null
                                     : "Enter correct email";
                               },
@@ -104,7 +104,7 @@ class _SignUpState extends State<SignUp> {
                             ),
                             TextFormField(
                               validator: (val) {
-                                return val.length < 6
+                                return val!.length < 6
                                     ? "Enter Password 6+ characters"
                                     : null;
                               },

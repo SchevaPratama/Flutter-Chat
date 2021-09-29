@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutchat/helper/authenticate.dart';
 import 'package:flutchat/helper/constants.dart';
 import 'package:flutchat/helper/helperfunction.dart';
@@ -18,7 +19,7 @@ class ChatRoom extends StatefulWidget {
 class _ChatRoomState extends State<ChatRoom> {
   AuthMethods authMethods = new AuthMethods();
   DatabaseMethods databaseMethods = new DatabaseMethods();
-  Stream chatRoomStream;
+  Stream? chatRoomStream;
 
   Widget chatRoomList() {
     return StreamBuilder(
@@ -27,14 +28,14 @@ class _ChatRoomState extends State<ChatRoom> {
         return snapshot.hasData
             ? ListView.builder(
                 shrinkWrap: true,
-                itemCount: snapshot.data.documents.length,
+                itemCount: (snapshot.data! as QuerySnapshot).docs.length,
                 itemBuilder: (context, index) {
                   return ChatRoomsTile(
-                      snapshot.data.documents[index].data["chatroomid"]
+                      ((snapshot.data! as QuerySnapshot).docs[index].data() as Map<String, dynamic>)["chatroomid"]
                           .toString()
                           .replaceAll("_", "")
-                          .replaceAll(Constants.myName, ""),
-                      snapshot.data.documents[index].data["chatroomid"]);
+                          .replaceAll(Constants.myName!, ""),
+                      ((snapshot.data! as QuerySnapshot).docs[index].data() as Map<String, dynamic>)["chatroomid"]);
                 },
               )
             : Container();
@@ -97,7 +98,7 @@ class _ChatRoomState extends State<ChatRoom> {
 
 class ChatRoomsTile extends StatelessWidget {
   final String userName;
-  final String chatRoomId;
+  final String? chatRoomId;
   ChatRoomsTile(this.userName, this.chatRoomId);
   @override
   Widget build(BuildContext context) {

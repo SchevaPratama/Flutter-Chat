@@ -25,10 +25,10 @@ class _SignInState extends State<SignIn> {
       new TextEditingController();
 
   bool isLoading = false;
-  QuerySnapshot snapshotUserInfo;
+  late QuerySnapshot snapshotUserInfo;
 
   signIn() {
-    if (formKey.currentState.validate()) {
+    if (formKey.currentState!.validate()) {
       HelperFunctions.saveUserEmailSharedPreference(
           emailTexteditingController.text);
 
@@ -41,9 +41,9 @@ class _SignInState extends State<SignIn> {
           .then((val) {
         snapshotUserInfo = val;
         HelperFunctions.saveUserNameSharedPreference(
-            snapshotUserInfo.documents[0].data['name']);
+            (snapshotUserInfo.docs[0].data() as Map<String, dynamic>)['name']);
         HelperFunctions.saveUserEmailSharedPreference(
-            snapshotUserInfo.documents[0].data['email']);
+            (snapshotUserInfo.docs[0].data() as Map<String, dynamic>)['name']);
       });
 
       authMethods.SignInWithEmailAndPassword(emailTexteditingController.text,
@@ -61,7 +61,7 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarMain(context),
+      appBar: appBarMain(context) as PreferredSizeWidget?,
       body: Container(
         height: MediaQuery.of(context).size.height - 50,
         alignment: Alignment.bottomCenter,
@@ -78,7 +78,7 @@ class _SignInState extends State<SignIn> {
                       validator: (val) {
                         return RegExp(
                                     r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                .hasMatch(val)
+                                .hasMatch(val!)
                             ? null
                             : "Enter correct email";
                       },
@@ -88,7 +88,7 @@ class _SignInState extends State<SignIn> {
                     ),
                     TextFormField(
                       validator: (val) {
-                        return val.length < 6
+                        return val!.length < 6
                             ? "Enter Password 6+ characters"
                             : null;
                       },

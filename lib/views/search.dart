@@ -11,7 +11,7 @@ class SearchScreen extends StatefulWidget {
   _SearchScreenState createState() => _SearchScreenState();
 }
 
-String _myName;
+String? _myName;
 
 class _SearchScreenState extends State<SearchScreen> {
   DatabaseMethods databaseMethods = new DatabaseMethods();
@@ -19,17 +19,17 @@ class _SearchScreenState extends State<SearchScreen> {
   TextEditingController searchTextEditingController =
       new TextEditingController();
 
-  QuerySnapshot searchSnapshot;
+  QuerySnapshot? searchSnapshot;
 
   Widget searchList() {
     return searchSnapshot != null
         ? ListView.builder(
-            itemCount: searchSnapshot.documents.length,
+            itemCount: searchSnapshot!.docs.length,
             shrinkWrap: true,
             itemBuilder: (context, index) {
               return SearchTile(
-                  userName: searchSnapshot.documents[index].data["name"],
-                  userEmail: searchSnapshot.documents[index].data["email"]);
+                  userName: (searchSnapshot!.docs[index].data() as Map<String, dynamic>)["name"],
+                  userEmail: (searchSnapshot!.docs[index].data() as Map<String, dynamic>)["email"]);
             })
         : Container();
   }
@@ -45,11 +45,11 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   // Create chat room,send user to converstation screen,push replacement
-  createChatRoomAndStartConverstation({String userName}) {
+  createChatRoomAndStartConverstation({String? userName}) {
     if (userName != Constants.myName) {
-      String chatRoomId = getChatRoomId(userName, Constants.myName);
+      String chatRoomId = getChatRoomId(userName!, Constants.myName!);
 
-      List<String> users = [userName, Constants.myName];
+      List<String?> users = [userName, Constants.myName];
       Map<String, dynamic> chatRoomMap = {
         "users": users,
         "chatroomid": chatRoomId
@@ -65,7 +65,7 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  Widget SearchTile({String userName, String userEmail}) {
+  Widget SearchTile({required String userName, required String userEmail}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
@@ -124,7 +124,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarMain(context),
+      appBar: appBarMain(context) as PreferredSizeWidget?,
       body: Container(
         child: Column(
           children: <Widget>[

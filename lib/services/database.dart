@@ -3,37 +3,37 @@ import 'package:flutchat/views/chatRoom.dart';
 
 class DatabaseMethods {
   getUserByUsername(String username) async {
-    return await Firestore.instance
+    return await FirebaseFirestore.instance
         .collection("users")
         .where("name", isEqualTo: username)
-        .getDocuments();
+        .get();
   }
 
   getUserByUserEmail(String userEmail) async {
-    return await Firestore.instance
+    return await FirebaseFirestore.instance
         .collection("users")
         .where("email", isEqualTo: userEmail)
-        .getDocuments();
+        .get();
   }
 
   uploadUserInfo(userMap) {
-    Firestore.instance.collection("users").add(userMap);
+    FirebaseFirestore.instance.collection("users").add(userMap);
   }
 
   createChatRoom(String chatRoomId, chatRoomMap) {
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection("ChatRoom")
-        .document(chatRoomId)
-        .setData(chatRoomMap)
+        .doc(chatRoomId)
+        .set(chatRoomMap)
         .catchError((e) {
       print(e.toString());
     });
   }
 
-  addConverstationMessage(String chatRoomId, messageMap) {
-    Firestore.instance
+  addConverstationMessage(String? chatRoomId, messageMap) {
+    FirebaseFirestore.instance
         .collection("ChatRoom")
-        .document(chatRoomId)
+        .doc(chatRoomId)
         .collection("chats")
         .add(messageMap)
         .catchError((e) {
@@ -41,17 +41,17 @@ class DatabaseMethods {
     });
   }
 
-  getConverstationMessage(String chatRoomId) async {
-    return await Firestore.instance
+  getConverstationMessage(String? chatRoomId) async {
+    return await FirebaseFirestore.instance
         .collection("ChatRoom")
-        .document(chatRoomId)
+        .doc(chatRoomId)
         .collection("chats")
         .orderBy("time", descending: false)
         .snapshots();
   }
 
-  getChatRooms(String userName) async {
-    return await Firestore.instance
+  getChatRooms(String? userName) async {
+    return await FirebaseFirestore.instance
         .collection("ChatRoom")
         .where("users", arrayContains: userName)
         .snapshots();
