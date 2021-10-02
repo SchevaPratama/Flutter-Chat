@@ -1,7 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutchat/views/chatRoom.dart';
+import 'package:firebase_storage/firebase_storage.dart' as storage;
 
 class DatabaseMethods {
+  static Future<String?> getUrlImage(String path) async {
+    try {
+      return (await storage.FirebaseStorage.instance.ref().child(path).getDownloadURL());
+    } catch (e) {
+      return null;
+    }
+  }
   getUserByUsername(String username) async {
     return await FirebaseFirestore.instance
         .collection("users")
