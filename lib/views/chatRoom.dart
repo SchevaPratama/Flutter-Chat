@@ -31,11 +31,13 @@ class _ChatRoomState extends State<ChatRoom> {
                 itemCount: (snapshot.data! as QuerySnapshot).docs.length,
                 itemBuilder: (context, index) {
                   return ChatRoomsTile(
-                      ((snapshot.data! as QuerySnapshot).docs[index].data() as Map<String, dynamic>)["chatroomid"]
+                      ((snapshot.data! as QuerySnapshot).docs[index].data()
+                              as Map<String, dynamic>)["chatroomid"]
                           .toString()
                           .replaceAll("_", "")
                           .replaceAll(Constants.myName!, ""),
-                      ((snapshot.data! as QuerySnapshot).docs[index].data() as Map<String, dynamic>)["chatroomid"]);
+                      ((snapshot.data! as QuerySnapshot).docs[index].data()
+                          as Map<String, dynamic>)["chatroomid"]);
                 },
               )
             : Container();
@@ -63,9 +65,9 @@ class _ChatRoomState extends State<ChatRoom> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset(
-          "assets/images/logo.png",
-          height: 50,
+        automaticallyImplyLeading: false,
+        title: Text(
+          "Chats",
         ),
         actions: <Widget>[
           GestureDetector(
@@ -103,38 +105,60 @@ class ChatRoomsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ConverstationScreen(
-                chatRoomId,
-              ),
-            ));
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        child: Row(
-          children: <Widget>[
-            Container(
-              width: 40,
-              height: 40,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  color: Colors.lightBlue,
-                  borderRadius: BorderRadius.circular(40)),
-              child: Text(
-                "${userName.substring(0, 1)}",
-                style: biggerTextStyle(),
-              ),
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ConverstationScreen(
+                  chatRoomId,
+                ),
+              ));
+        },
+        child: InkWell(
+          // onTap: press,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: 20.0, vertical: 20.0 * 0.75),
+            child: Row(
+              children: [
+                Stack(
+                  children: [
+                    Container(
+                      // margin: EdgeInsets.only(left: 10, top: 10),
+                      width: 40,
+                      height: 40,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          color: Color(0xFF023e8a),
+                          borderRadius: BorderRadius.circular(40)),
+                      child: Text(
+                        "${userName.substring(0, 1)}",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'Poppins',
+                            fontSize: 18),
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          userName,
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w500,color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            SizedBox(
-              width: 8,
-            ),
-            Text(userName, style: biggerTextStyle())
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }

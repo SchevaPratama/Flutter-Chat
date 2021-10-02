@@ -208,13 +208,13 @@ class _ConverstationScreenState extends State<ConverstationScreen> {
             )
           ],
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.local_phone),
-            onPressed: () {},
-          ),
-          SizedBox(width: 20.0 / 2),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: Icon(Icons.local_phone),
+        //     onPressed: () {},
+        //   ),
+        //   SizedBox(width: 20.0 / 2),
+        // ],
       ),
       body: Column(
         children: <Widget>[
